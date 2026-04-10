@@ -55,7 +55,12 @@ service cloud.firestore {
       return data.keys().hasAll(['uid', 'email']) &&
              data.uid is string &&
              data.email is string &&
-             data.email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+             data.email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$") &&
+             (!('firstName' in data) || data.firstName is string) &&
+             (!('lastName' in data) || data.lastName is string) &&
+             (!('mobileNo' in data) || data.mobileNo is string) &&
+             (!('gender' in data) || data.gender in ['male', 'female', 'other']) &&
+             (!('dob' in data) || data.dob is string);
     }
 
     function isValidChat(data) {
@@ -82,7 +87,8 @@ service cloud.firestore {
       allow read: if isOwner(userId);
       allow create: if isOwner(userId) && isValidUser(request.resource.data);
       allow update: if isOwner(userId) && isValidUser(request.resource.data) &&
-                    request.resource.data.uid == resource.data.uid;
+                    request.resource.data.uid == resource.data.uid &&
+                    (!('mobileNo' in resource.data) || request.resource.data.mobileNo == resource.data.mobileNo);
     }
 
     match /chats/{chatId} {

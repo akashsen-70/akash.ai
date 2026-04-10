@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, MessageSquare, GraduationCap, LogOut, Trash2, Menu, X, Sun, Moon } from 'lucide-react';
+import { Plus, MessageSquare, GraduationCap, LogOut, Trash2, Menu, X, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChatSession } from '../types';
 import { clsx, type ClassValue } from 'clsx';
@@ -17,10 +17,9 @@ interface SidebarProps {
   onDeleteChat: (id: string) => void;
   onLogout: () => void;
   user: any;
+  onOpenProfile: () => void;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  theme: 'dark' | 'light';
-  setTheme: (theme: 'dark' | 'light') => void;
 }
 
 export default function Sidebar({
@@ -31,10 +30,9 @@ export default function Sidebar({
   onDeleteChat,
   onLogout,
   user,
+  onOpenProfile,
   isOpen,
-  setIsOpen,
-  theme,
-  setTheme
+  setIsOpen
 }: SidebarProps) {
   return (
     <>
@@ -56,43 +54,44 @@ export default function Sidebar({
         initial={false}
         animate={{ x: isOpen ? 0 : -320 }}
         className={cn(
-          "fixed top-0 left-0 bottom-0 w-80 bg-bg-secondary text-text-primary flex flex-col z-50 transition-transform lg:relative lg:translate-x-0 border-r border-border-primary",
+          "fixed top-0 left-0 bottom-0 w-80 bg-zinc-900 text-zinc-100 flex flex-col z-50 transition-transform lg:relative lg:translate-x-0",
           !isOpen && "lg:w-80"
         )}
       >
         {/* Header */}
-        <div className="p-4 flex items-center justify-between border-b border-border-primary">
+        <div className="p-4 flex items-center justify-between border-b border-zinc-800">
           <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white">A</span>
             </div>
             <span>Akash.ai</span>
           </div>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-2 hover:bg-bg-tertiary rounded-md transition-colors text-text-secondary hover:text-text-primary"
-              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            >
-              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-            <button onClick={() => setIsOpen(false)} className="lg:hidden p-2 hover:bg-bg-tertiary rounded-md">
-              <X size={20} />
-            </button>
-          </div>
+          <button onClick={() => setIsOpen(false)} className="lg:hidden p-2 hover:bg-zinc-800 rounded-md">
+            <X size={20} />
+          </button>
         </div>
 
         {/* New Chat Button */}
-        <div className="p-4">
+        <div className="p-4 space-y-2">
           <button
             onClick={() => {
               onNewChat();
               setIsOpen(false);
             }}
-            className="w-full flex items-center gap-3 px-4 py-3 bg-bg-tertiary hover:bg-bg-tertiary/80 border border-border-primary rounded-xl transition-colors text-sm font-medium"
+            className="w-full flex items-center gap-3 px-4 py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-xl transition-colors text-sm font-medium"
           >
             <Plus size={18} />
             New Chat
+          </button>
+          <button
+            onClick={() => {
+              onOpenProfile();
+              setIsOpen(false);
+            }}
+            className="w-full flex items-center gap-3 px-4 py-3 bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-800 rounded-xl transition-colors text-sm font-medium text-zinc-300"
+          >
+            <User size={18} />
+            My Profile
           </button>
         </div>
 
@@ -103,7 +102,7 @@ export default function Sidebar({
               key={chat.id}
               className={cn(
                 "group flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all relative",
-                currentChatId === chat.id ? "bg-bg-tertiary text-text-primary" : "text-text-secondary hover:bg-bg-tertiary/50 hover:text-text-primary"
+                currentChatId === chat.id ? "bg-zinc-800 text-white" : "text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200"
               )}
               onClick={() => {
                 onSelectChat(chat.id);
@@ -126,22 +125,22 @@ export default function Sidebar({
         </div>
 
         {/* Footer / User Profile */}
-        <div className="p-4 border-t border-border-primary mt-auto">
+        <div className="p-4 border-t border-zinc-800 mt-auto">
           {user ? (
             <div className="flex items-center gap-3 px-2 py-2">
               <img
                 src={user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || user.email}`}
                 alt="Profile"
-                className="w-9 h-9 rounded-full bg-bg-tertiary"
+                className="w-9 h-9 rounded-full bg-zinc-700"
                 referrerPolicy="no-referrer"
               />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{user.displayName || 'User'}</p>
-                <p className="text-xs text-text-secondary truncate">{user.email}</p>
+                <p className="text-xs text-zinc-500 truncate">{user.email}</p>
               </div>
               <button
                 onClick={onLogout}
-                className="p-2 hover:bg-bg-tertiary rounded-md text-text-secondary hover:text-text-primary transition-colors"
+                className="p-2 hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-zinc-100 transition-colors"
                 title="Logout"
               >
                 <LogOut size={18} />
@@ -149,7 +148,7 @@ export default function Sidebar({
             </div>
           ) : (
             <div className="text-center py-2">
-              <p className="text-xs text-text-secondary mb-2">Guest Mode</p>
+              <p className="text-xs text-zinc-500 mb-2">Guest Mode</p>
               <button
                 onClick={onLogout}
                 className="text-xs text-blue-500 hover:underline"

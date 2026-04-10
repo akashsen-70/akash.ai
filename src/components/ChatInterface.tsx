@@ -70,9 +70,9 @@ export default function ChatInterface({
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-bg-primary text-text-primary h-screen overflow-hidden relative">
+    <div className="flex-1 flex flex-col bg-zinc-950 text-zinc-100 h-screen overflow-hidden relative">
       {/* Header */}
-      <header className="p-4 border-b border-border-primary flex items-center justify-between bg-bg-primary/80 backdrop-blur-md sticky top-0 z-10">
+      <header className="p-4 border-b border-zinc-900 flex items-center justify-between bg-zinc-950/80 backdrop-blur-md sticky top-0 z-10">
         <div className="flex items-center gap-3">
           <div className={cn(
             "p-2 rounded-lg transition-colors",
@@ -82,17 +82,17 @@ export default function ChatInterface({
           </div>
           <div>
             <h2 className="font-semibold text-sm">{mode === 'study' ? 'Study Mode' : 'Chat Mode'}</h2>
-            <p className="text-xs text-text-secondary">{mode === 'study' ? 'Generating detailed exam notes' : 'Conversational AI Assistant'}</p>
+            <p className="text-xs text-zinc-500">{mode === 'study' ? 'Generating detailed exam notes' : 'Conversational AI Assistant'}</p>
           </div>
         </div>
 
         {/* Mode Toggle */}
-        <div className="flex bg-bg-secondary p-1 rounded-xl border border-border-primary">
+        <div className="flex bg-zinc-900 p-1 rounded-xl border border-zinc-800">
           <button
             onClick={() => setMode('chat')}
             className={cn(
               "px-4 py-1.5 rounded-lg text-xs font-medium transition-all",
-              mode === 'chat' ? "bg-bg-tertiary text-text-primary shadow-sm" : "text-text-secondary hover:text-text-primary"
+              mode === 'chat' ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"
             )}
           >
             Chat
@@ -101,7 +101,7 @@ export default function ChatInterface({
             onClick={() => setMode('study')}
             className={cn(
               "px-4 py-1.5 rounded-lg text-xs font-medium transition-all",
-              mode === 'study' ? "bg-bg-tertiary text-text-primary shadow-sm" : "text-text-secondary hover:text-text-primary"
+              mode === 'study' ? "bg-zinc-800 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300"
             )}
           >
             Study
@@ -110,7 +110,7 @@ export default function ChatInterface({
       </header>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-thin scrollbar-thumb-border-primary">
+      <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-thin scrollbar-thumb-zinc-800">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center max-w-2xl mx-auto space-y-6">
             <motion.div
@@ -122,7 +122,7 @@ export default function ChatInterface({
             </motion.div>
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tight">How can I help you today?</h1>
-              <p className="text-text-secondary">I can help you study for exams, explain complex topics, or just chat about anything.</p>
+              <p className="text-zinc-500">I can help you study for exams, explain complex topics, or just chat about anything.</p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full mt-8">
@@ -133,11 +133,11 @@ export default function ChatInterface({
                 <button
                   key={i}
                   onClick={() => setMode(item.title.toLowerCase().includes('study') ? 'study' : 'chat')}
-                  className="p-4 bg-bg-secondary border border-border-primary rounded-2xl text-left hover:bg-bg-tertiary transition-colors group"
+                  className="p-4 bg-zinc-900/50 border border-zinc-800 rounded-2xl text-left hover:bg-zinc-900 transition-colors group"
                 >
-                  <div className="mb-2 text-text-secondary group-hover:text-blue-400 transition-colors">{item.icon}</div>
+                  <div className="mb-2 text-zinc-400 group-hover:text-blue-400 transition-colors">{item.icon}</div>
                   <h3 className="font-medium text-sm mb-1">{item.title}</h3>
-                  <p className="text-xs text-text-secondary">{item.desc}</p>
+                  <p className="text-xs text-zinc-500">{item.desc}</p>
                 </button>
               ))}
             </div>
@@ -155,7 +155,7 @@ export default function ChatInterface({
             >
               <div className={cn(
                 "w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-1",
-                msg.role === 'user' ? "bg-bg-tertiary" : "bg-blue-600"
+                msg.role === 'user' ? "bg-zinc-800" : "bg-blue-600"
               )}>
                 {msg.role === 'user' ? <User size={16} /> : <Bot size={16} />}
               </div>
@@ -165,13 +165,13 @@ export default function ChatInterface({
               )}>
                 <div className={cn(
                   "px-4 py-3 rounded-2xl text-sm leading-relaxed",
-                  msg.role === 'user' ? "bg-bg-tertiary text-text-primary" : "bg-bg-secondary text-text-primary border border-border-primary"
+                  msg.role === 'user' ? "bg-zinc-800 text-zinc-100" : "bg-zinc-900/50 text-zinc-200 border border-zinc-800"
                 )}>
                   <div className="markdown-body">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
                   </div>
                 </div>
-                <span className="text-[10px] text-text-secondary px-1">
+                <span className="text-[10px] text-zinc-600 px-1">
                   {new Date(msg.createdAt?.seconds * 1000 || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
@@ -183,9 +183,9 @@ export default function ChatInterface({
             <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0 animate-pulse">
               <Bot size={16} />
             </div>
-            <div className="bg-bg-secondary border border-border-primary px-4 py-3 rounded-2xl flex items-center gap-2">
+            <div className="bg-zinc-900/50 border border-zinc-800 px-4 py-3 rounded-2xl flex items-center gap-2">
               <Loader2 size={14} className="animate-spin text-blue-500" />
-              <span className="text-xs text-text-secondary">Akash.ai is thinking...</span>
+              <span className="text-xs text-zinc-400">Akash.ai is thinking...</span>
             </div>
           </div>
         )}
@@ -193,7 +193,7 @@ export default function ChatInterface({
       </div>
 
       {/* Input Area */}
-      <div className="p-4 bg-bg-primary/80 backdrop-blur-md border-t border-border-primary">
+      <div className="p-4 bg-zinc-950/80 backdrop-blur-md border-t border-zinc-900">
         <div className="max-w-4xl mx-auto relative">
           {/* Image Previews */}
           <AnimatePresence>
@@ -206,7 +206,7 @@ export default function ChatInterface({
               >
                 {images.map((img, i) => (
                   <div key={i} className="relative group flex-shrink-0">
-                    <img src={img} alt="Upload" className="w-20 h-20 object-cover rounded-xl border border-border-primary" />
+                    <img src={img} alt="Upload" className="w-20 h-20 object-cover rounded-xl border border-zinc-800" />
                     <button
                       onClick={() => removeImage(i)}
                       className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -230,7 +230,7 @@ export default function ChatInterface({
                 }
               }}
               placeholder={mode === 'study' ? "Paste notes or upload images for exam-ready content..." : "Ask me anything..."}
-              className="w-full bg-bg-secondary border border-border-primary rounded-2xl px-4 py-4 pr-24 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all resize-none min-h-[60px] max-h-[200px] text-text-primary"
+              className="w-full bg-zinc-900 border border-zinc-800 rounded-2xl px-4 py-4 pr-24 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/50 transition-all resize-none min-h-[60px] max-h-[200px]"
               rows={1}
             />
             
@@ -246,7 +246,7 @@ export default function ChatInterface({
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary rounded-xl transition-all"
+                className="p-2 text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800 rounded-xl transition-all"
                 title="Upload Images"
               >
                 <Paperclip size={20} />
@@ -257,7 +257,7 @@ export default function ChatInterface({
                 className={cn(
                   "p-2 rounded-xl transition-all",
                   (!input.trim() && images.length === 0) || isGenerating
-                    ? "text-text-secondary cursor-not-allowed"
+                    ? "text-zinc-700 cursor-not-allowed"
                     : "text-blue-500 hover:bg-blue-600/10"
                 )}
               >
@@ -265,7 +265,7 @@ export default function ChatInterface({
               </button>
             </div>
           </form>
-          <p className="text-[10px] text-text-secondary text-center mt-2">
+          <p className="text-[10px] text-zinc-600 text-center mt-2">
             Akash.ai can make mistakes. Consider checking important information.
           </p>
         </div>

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db, collection, doc, setDoc, getDoc, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, deleteDoc, updateDoc, signOut } from './firebase';
-import { ChatSession, Message } from './types';
+import { ChatSession, Message, UserProfile } from './types';
 import Sidebar from './components/Sidebar';
 import ChatInterface from './components/ChatInterface';
 import Auth from './components/Auth';
+import ProfileSetup from './components/ProfileSetup';
+import ProfileModal from './components/ProfileModal';
 import { v4 as uuidv4 } from 'uuid';
 import { Menu } from 'lucide-react';
 import { generateAIResponse } from './services/geminiService';
@@ -18,16 +20,46 @@ export default function App() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [mode, setMode] = useState<'study' | 'chat'>('chat');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    return (localStorage.getItem('theme') as 'dark' | 'light') || 'dark';
-  });
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
+  // Load user profile
   useEffect(() => {
-    const root = window.document.documentElement;
-    root.classList.remove('light', 'dark');
-    root.classList.add(theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+    if (user) {
+      const unsubscribe = onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
+        if (docSnap.exists()) {
+          setUserProfile({ uid: docSnap.id, ...docSnap.data() } as UserProfile);
+        } else {
+          // Initialize user doc if it doesn't exist
+          const initialProfile: UserProfile = {
+            uid: user.uid,
+            email: user.email || '',
+            displayName: user.displayName || '',
+            photoURL: user.photoURL || '',
+            profileCompleted: false,
+            createdAt: serverTimestamp()
+          };
+          setDoc(doc(db, 'users', user.uid), initialProfile);
+        }
+      });
+      return () => unsubscribe();
+    } else if (isGuest) {
+      const savedProfile = JSON.parse(localStorage.getItem('guest_profile') || 'null');
+      if (savedProfile) {
+        setUserProfile(savedProfile);
+      } else {
+        const initialProfile: UserProfile = {
+          uid: 'guest',
+          email: 'guest@akash.ai',
+          displayName: 'Guest User',
+          profileCompleted: false,
+          createdAt: new Date()
+        };
+        setUserProfile(initialProfile);
+        localStorage.setItem('guest_profile', JSON.stringify(initialProfile));
+      }
+    }
+  }, [user, isGuest]);
 
   // Load chats
   useEffect(() => {
@@ -186,6 +218,36 @@ export default function App() {
       await signOut(auth);
     } else {
       setIsGuest(false);
+      setUserProfile(null);
+    }
+  };
+
+  const handleProfileSubmit = async (data: any) => {
+    const updatedProfile = {
+      ...userProfile,
+      ...data,
+      profileCompleted: true,
+      updatedAt: user ? serverTimestamp() : new Date()
+    };
+
+    if (user) {
+      await updateDoc(doc(db, 'users', user.uid), updatedProfile);
+    } else {
+      setUserProfile(updatedProfile);
+      localStorage.setItem('guest_profile', JSON.stringify(updatedProfile));
+    }
+  };
+
+  const handleProfileUpdate = async (data: any) => {
+    if (user) {
+      await updateDoc(doc(db, 'users', user.uid), {
+        ...data,
+        updatedAt: serverTimestamp()
+      });
+    } else {
+      const updatedProfile = { ...userProfile, ...data } as UserProfile;
+      setUserProfile(updatedProfile);
+      localStorage.setItem('guest_profile', JSON.stringify(updatedProfile));
     }
   };
 
@@ -203,6 +265,19 @@ export default function App() {
 
   return (
     <div className="flex h-screen bg-zinc-950 overflow-hidden">
+      {userProfile && !userProfile.profileCompleted && (
+        <ProfileSetup onSubmit={handleProfileSubmit} />
+      )}
+
+      {userProfile && (
+        <ProfileModal
+          isOpen={isProfileModalOpen}
+          onClose={() => setIsProfileModalOpen(false)}
+          profile={userProfile}
+          onUpdate={handleProfileUpdate}
+        />
+      )}
+
       {/* Mobile Menu Trigger */}
       <button
         onClick={() => setIsSidebarOpen(true)}
@@ -219,10 +294,9 @@ export default function App() {
         onDeleteChat={handleDeleteChat}
         onLogout={handleLogout}
         user={user}
+        onOpenProfile={() => setIsProfileModalOpen(true)}
         isOpen={isSidebarOpen}
         setIsOpen={setIsSidebarOpen}
-        theme={theme}
-        setTheme={setTheme}
       />
 
       <ChatInterface

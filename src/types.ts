@@ -3,6 +3,12 @@ export interface UserProfile {
   email: string;
   displayName?: string;
   photoURL?: string;
+  firstName?: string;
+  lastName?: string;
+  mobileNo?: string;
+  gender?: 'male' | 'female' | 'other';
+  dob?: string;
+  profileCompleted?: boolean;
   createdAt: any;
 }
 
